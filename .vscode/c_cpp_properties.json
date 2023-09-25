@@ -1,0 +1,44 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/elie/bookros2_ws/install/ros2_control_test_assets/include/**",
+        "/opt/ros/foxy/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/gazebo_ros2_control/gazebo_ros2_control/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_control/controller_interface/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_control/controller_manager/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_control/hardware_interface/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_control/ros2_control_test_assets/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_control/transmission_interface/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/diff_drive_controller/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/effort_controllers/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/force_torque_sensor_broadcaster/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/forward_command_controller/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/gripper_controllers/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/imu_sensor_broadcaster/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/joint_state_broadcaster/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/joint_trajectory_controller/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/position_controllers/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/ros2_controllers/velocity_controllers/include/**",
+        "/home/elie/bookros2_ws/src/ThirdParty/twist_mux/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_bt_bumpgo/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_bt_patrolling/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_fsm_bumpgo_cpp/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_tf2_detector/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_tracking/include/**",
+        "/home/elie/bookros2_ws/src/book_ros2/br2_vff_avoidance/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

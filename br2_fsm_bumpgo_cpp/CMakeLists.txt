@@ -20,10 +20,33 @@ add_executable(bumpgo
   src/br2_fsm_bumpgo_cpp/BumpGoNode.cpp
   src/bumpgo_main.cpp
 )
+
+add_executable(bumpgo_ex1
+  src/br2_fsm_bumpgo_cpp/BumpGoNodeEx1.cpp
+  src/bumpgo_main_ex1.cpp
+)
+
+add_executable(bumpgo_ex2_ol
+  src/br2_fsm_bumpgo_cpp/BumpGoNodeEx2OL.cpp
+  src/bumpgo_main_ex2_ol.cpp
+)
+
+add_executable(bumpgo_ex2_cl
+  src/br2_fsm_bumpgo_cpp/BumpGoNodeEx2CL.cpp
+  src/bumpgo_main_ex2_cl.cpp
+)
+
 ament_target_dependencies(bumpgo ${dependencies})
+ament_target_dependencies(bumpgo_ex1 ${dependencies})
+ament_target_dependencies(bumpgo_ex2_ol ${dependencies})
+ament_target_dependencies(bumpgo_ex2_cl ${dependencies})
+
 
 install(TARGETS
   bumpgo
+  bumpgo_ex1
+  bumpgo_ex2_ol
+  bumpgo_ex2_cl
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}

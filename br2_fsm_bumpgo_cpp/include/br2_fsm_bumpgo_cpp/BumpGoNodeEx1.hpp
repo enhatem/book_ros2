@@ -20,15 +20,15 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-namespace br2_fsm_bumpgo_cpp  // This helps to keep the code organized and reduces the likelihood of naming conflicts with other parts of the program or external libraries
+namespace br2_fsm_bumpgo_cpp_ex1  // This helps to keep the code organized and reduces the likelihood of naming conflicts with other parts of the program or external libraries
 {
 
 using namespace std::chrono_literals;  // NOLINT
 
-class BumpGoNode : public rclcpp::Node
+class BumpGoNodeEx1 : public rclcpp::Node
 {
 public:
-  BumpGoNode();
+  BumpGoNodeEx1();
 
 private:
   void scan_callback(sensor_msgs::msg::LaserScan::UniquePtr msg);
@@ -36,8 +36,9 @@ private:
 
   static const int FORWARD = 0;  // the static keyword means that the attribute is shared by all instances of the class, rather than being specific to each instance. This means that there is only one copy of the attribute, regardless of how many objects of the class are created.
   static const int BACK = 1;
-  static const int TURN = 2;
+  static const int TURN = 2;  // Turning left
   static const int STOP = 3;
+  static const int TURN_RIGHT = 4;  // added code
   int state_;
   rclcpp::Time state_ts_;
 
@@ -47,6 +48,8 @@ private:
   bool check_back_2_turn();
   bool check_turn_2_forward();
   bool check_stop_2_forward();
+  bool check_forward_2_turn_right(); // added code
+  bool check_forward_2_turn_left(); // added code
 
   const rclcpp::Duration TURNING_TIME {2s};  // {} is called Uniform Initialization Syntax. It makes the code easier to read, prevents narrow conversions and it can be used to initialize aggregates (arrays, structs) 
   const rclcpp::Duration BACKING_TIME {2s};
