@@ -36,6 +36,7 @@ add_executable(bumpgo_ex2_cl
   src/bumpgo_main_ex2_cl.cpp
 )
 
+# Ensures that the include directories and libraries of all dependencies are ordered correctly when using overlay workspaces
 ament_target_dependencies(bumpgo ${dependencies})
 ament_target_dependencies(bumpgo_ex1 ${dependencies})
 ament_target_dependencies(bumpgo_ex2_ol ${dependencies})

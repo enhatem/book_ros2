@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto bumpgo_node_ex2_cl = std::make_shared<br2_fsm_bumpgo_cpp_ex2_cl::BumpGoNodeEx2CL>();
+  auto bumpgo_node_ex2_cl = std::make_shared<br2_fsm_bumpgo_cpp::BumpGoNodeEx2CL>();
   rclcpp::spin(bumpgo_node_ex2_cl);
 
   rclcpp::shutdown();

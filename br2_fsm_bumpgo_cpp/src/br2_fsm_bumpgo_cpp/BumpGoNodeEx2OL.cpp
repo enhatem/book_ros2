@@ -20,7 +20,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-namespace br2_fsm_bumpgo_cpp_ex2_ol
+namespace br2_fsm_bumpgo_cpp
 {
 
 using namespace std::chrono_literals;

@@ -20,7 +20,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-namespace br2_fsm_bumpgo_cpp_ex1  // This helps to keep the code organized and reduces the likelihood of naming conflicts with other parts of the program or external libraries
+namespace br2_fsm_bumpgo_cpp  // This helps to keep the code organized and reduces the likelihood of naming conflicts with other parts of the program or external libraries
 {
 
 using namespace std::chrono_literals;  // NOLINT
