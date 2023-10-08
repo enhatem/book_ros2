@@ -33,7 +33,7 @@ ObstacleDetectorNode::ObstacleDetectorNode()
     "input_scan", rclcpp::SensorDataQoS(),
     std::bind(&ObstacleDetectorNode::scan_callback, this, _1));
 
-  tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(*this);
+  tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(*this);  // When we use *this, we are dereferencing the pointer to the current instance of the ObstacleDetectorNode class.
 }
 
 void

@@ -39,7 +39,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
   std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_broadcaster_;
 
-  std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
+  std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};  // Initializing pointers to null is a good practice because it prevents them from having a "garbage" value, which could lead to undefined behavior if the pointer is used before it is assigned a valid address.
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
 };
 

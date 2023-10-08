@@ -59,14 +59,14 @@ ObstacleMonitorNode::control_cycle()
   double theta = atan2(y, x);
 
   RCLCPP_INFO(
-    get_logger(), "Obstacle detected at (%lf m, %lf m, , %lf m) = %lf rads",
+    get_logger(), "Obstacle detected at (%lf m, %lf m, , %lf m) = %lf rads",  // `lf` stands for long float, which represents a double-floating point number
     x, y, z, theta);
 
   visualization_msgs::msg::Marker obstacle_arrow;
   obstacle_arrow.header.frame_id = "base_footprint";
   obstacle_arrow.header.stamp = now();
   obstacle_arrow.type = visualization_msgs::msg::Marker::ARROW;
-  obstacle_arrow.action = visualization_msgs::msg::Marker::ADD;
+  obstacle_arrow.action = visualization_msgs::msg::Marker::ADD;  // Adding the arrow marker to the visualization
   obstacle_arrow.lifetime = rclcpp::Duration(1s);
 
   geometry_msgs::msg::Point start;
@@ -77,12 +77,12 @@ ObstacleMonitorNode::control_cycle()
   end.x = x;
   end.y = y;
   end.z = z;
-  obstacle_arrow.points = {start, end};
+  obstacle_arrow.points = {start, end};  // The list initialization syntax {} can be used to initialize a vector (obstacle_arrow.points) with a list of elements.
 
   obstacle_arrow.color.r = 1.0;
   obstacle_arrow.color.g = 0.0;
   obstacle_arrow.color.b = 0.0;
-  obstacle_arrow.color.a = 1.0;
+  obstacle_arrow.color.a = 1.0;  // Setting the alpha=1.0 since it is 0.0 by default. This will allow us to see the arrow in RViz2.
 
   obstacle_arrow.scale.x = 0.02;
   obstacle_arrow.scale.y = 0.1;
