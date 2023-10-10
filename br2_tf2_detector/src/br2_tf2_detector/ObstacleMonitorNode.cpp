@@ -81,8 +81,10 @@ ObstacleMonitorNode::control_cycle()
   end.z = z;
   obstacle_arrow.points = {start, end};  // The list initialization syntax {} can be used to initialize a vector (obstacle_arrow.points) with a list of elements.
 
+  // Checking distance between base_footprint and obstacle
   double dist = sqrt( pow(x, 2) + pow(y, 2) );
 
+  // Changing arrow color based on distance between base_footprint and obstacle
   if (dist > THRESHOLD_DISTANCE){
     obstacle_arrow.color.r = 0.0;
     obstacle_arrow.color.g = 1.0;
