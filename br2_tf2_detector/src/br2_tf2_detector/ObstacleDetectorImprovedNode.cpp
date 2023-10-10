@@ -64,7 +64,7 @@ ObstacleDetectorImprovedNode::scan_callback(sensor_msgs::msg::LaserScan::UniqueP
         tf2::Duration(200ms));
       tf2::fromMsg(odom2laser_msg, odom2laser);  // tf2::fromMsg() and tf2::toMsg() are transformation functions that allow transforming from a message to a TF2 representation, and vice versa
     } catch (tf2::TransformException & ex) {
-      RCLCPP_WARN(get_logger(), "Ommak chitta abouk tarazan: %s", ex.what());
+      RCLCPP_WARN(get_logger(), "Could not retrieve transform: %s", ex.what());
       return;
     }
 
