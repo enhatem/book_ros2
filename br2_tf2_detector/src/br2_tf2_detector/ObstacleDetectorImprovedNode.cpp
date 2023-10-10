@@ -52,19 +52,19 @@ ObstacleDetectorImprovedNode::scan_callback(sensor_msgs::msg::LaserScan::UniqueP
   double dist = msg->ranges[msg->ranges.size() / 2];
 
   if (!std::isinf(dist)) {
-    tf2::Transform laser2object;
+    tf2::Transform laser2object;  // It is a datatype of the TF2 library that allows to perform operations (matrix calculations)
     laser2object.setOrigin(tf2::Vector3(dist, 0.0, 0.0));
     laser2object.setRotation(tf2::Quaternion(0.0, 0.0, 0.0, 1.0));
 
-    geometry_msgs::msg::TransformStamped odom2laser_msg;
-    tf2::Stamped<tf2::Transform> odom2laser;
+    geometry_msgs::msg::TransformStamped odom2laser_msg;  // geometry_msgs::msg::TransformStamped is used to post TFs , and is the returned result of lookupTransform
+    tf2::Stamped<tf2::Transform> odom2laser;  // similar to tf2::Transform but with a header that indicates a timestamp
     try {
       odom2laser_msg = tf_buffer_->lookupTransform(
         "odom", "base_laser_link", tf2::timeFromSec(rclcpp::Time(msg->header.stamp).seconds()),
         tf2::Duration(200ms));
-      tf2::fromMsg(odom2laser_msg, odom2laser);
+      tf2::fromMsg(odom2laser_msg, odom2laser);  // tf2::fromMsg() and tf2::toMsg() are transformation functions that allow transforming from a message to a TF2 representation, and vice versa
     } catch (tf2::TransformException & ex) {
-      RCLCPP_WARN(get_logger(), "Obstacle transform not found: %s", ex.what());
+      RCLCPP_WARN(get_logger(), "Ommak chitta abouk tarazan: %s", ex.what());
       return;
     }
 

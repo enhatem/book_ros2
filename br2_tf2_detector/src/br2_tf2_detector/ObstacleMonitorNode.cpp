@@ -17,6 +17,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <memory>
+#include <cmath>
 
 #include "br2_tf2_detector/ObstacleMonitorNode.hpp"
 
@@ -32,7 +33,8 @@ using namespace std::chrono_literals;
 ObstacleMonitorNode::ObstacleMonitorNode()
 : Node("obstacle_monitor"),
   tf_buffer_(),
-  tf_listener_(tf_buffer_)
+  tf_listener_(tf_buffer_), 
+  THRESHOLD_DISTANCE(2.0)
 {
   marker_pub_ = create_publisher<visualization_msgs::msg::Marker>("obstacle_marker", 1);
 
@@ -79,9 +81,19 @@ ObstacleMonitorNode::control_cycle()
   end.z = z;
   obstacle_arrow.points = {start, end};  // The list initialization syntax {} can be used to initialize a vector (obstacle_arrow.points) with a list of elements.
 
-  obstacle_arrow.color.r = 1.0;
-  obstacle_arrow.color.g = 0.0;
-  obstacle_arrow.color.b = 0.0;
+  double dist = sqrt( pow(x, 2) + pow(y, 2) );
+
+  if (dist > THRESHOLD_DISTANCE){
+    obstacle_arrow.color.r = 0.0;
+    obstacle_arrow.color.g = 1.0;
+    obstacle_arrow.color.b = 0.0;
+  }else{
+    obstacle_arrow.color.r = 1.0;
+    obstacle_arrow.color.g = 0.0;
+    obstacle_arrow.color.b = 0.0;
+  } 
+
+  
   obstacle_arrow.color.a = 1.0;  // Setting the alpha=1.0 since it is 0.0 by default. This will allow us to see the arrow in RViz2.
 
   obstacle_arrow.scale.x = 0.02;
