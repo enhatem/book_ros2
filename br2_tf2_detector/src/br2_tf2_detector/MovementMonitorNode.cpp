@@ -45,7 +45,7 @@ MovementMonitorNode::timer_callback()
     double dist = sqrt( pow(x_dif, 2) + pow(y_dif, 2) );
 
     // Printing distance travelled on console
-    RCLCPP_INFO(get_logger(), "Distance travalled since 1s: %lf", dist);
+    RCLCPP_INFO(get_logger(), "Distance travalled since 1s: %lf m", dist);
 
     // Replacing previous value of odom2base_foorprint with current one
     odom2base_footprint_previous = odom2base_footprint_current;
