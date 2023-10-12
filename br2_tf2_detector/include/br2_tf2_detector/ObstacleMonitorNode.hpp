@@ -41,7 +41,9 @@ private:
   tf2::BufferCore tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr marker_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr marker_pub_;  // marker from original code (marker for base_footprint frame)
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr odom_marker_pub_;  // marker for the odom frame
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr head_2_link_marker_pub_;  // marker for the head_2_link frame
 
   double THRESHOLD_DISTANCE;
 };
