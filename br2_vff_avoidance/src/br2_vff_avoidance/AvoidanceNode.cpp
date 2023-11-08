@@ -143,24 +143,24 @@ AvoidanceNode::make_marker(const std::vector<float> & vector, VFFColor vff_color
   start.x = 0.0;
   start.y = 0.0;
   geometry_msgs::msg::Point end;
-  start.x = vector[0];
-  start.y = vector[1];
-  marker.points = {end, start};
+  start.x = vector[0];  // Wrong
+  start.y = vector[1];  // Wrong
+  marker.points = {end, start}; // ??????? Try to invert the order and see the effect of the arrows
 
   marker.scale.x = 0.05;
   marker.scale.y = 0.1;
 
   switch (vff_color) {
     case RED:
-      marker.id = 0;
+      marker.id = 0;  // Each vector must have a separate ID. Otherwise, it will be replaced in case another vector is published.
       marker.color.r = 1.0;
       break;
     case GREEN:
-      marker.id = 1;
+      marker.id = 1;  
       marker.color.g = 1.0;
       break;
     case BLUE:
-      marker.id = 2;
+      marker.id = 2; 
       marker.color.b = 1.0;
       break;
   }
