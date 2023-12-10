@@ -47,7 +47,7 @@ AvoidanceNode::AvoidanceNode()
 void
 AvoidanceNode::scan_callback(sensor_msgs::msg::LaserScan::UniquePtr msg)
 {
-  last_scan_ = std::move(msg);
+  last_scan_ = std::move(msg);  // moving the ownership from msg to last_scan_, so last_scan_ will now point to the same memory location that msg was pointing to
 }
 
 void
@@ -62,8 +62,8 @@ AvoidanceNode::control_cycle()
   const VFFVectors & vff = get_vff(*last_scan_);
 
   // Use result vector to calculate output speed
-  const auto & v = vff.result;
-  double angle = atan2(v[1], v[0]);
+  const auto & v = vff.result;  // creating a reference variable to vff.results
+  double angle = atan2(v[1], v[0]);  // calculates the angle θ from the positive x-axis to the point (x, y) in the range [-π, π]
   double module = sqrt(v[0] * v[0] + v[1] * v[1]);
 
   // Create ouput message, controlling speed limits
@@ -82,7 +82,7 @@ AvoidanceNode::control_cycle()
 VFFVectors
 AvoidanceNode::get_vff(const sensor_msgs::msg::LaserScan & scan)
 {
-  // This is the obstacle radious in which an obstacle affects the robot
+  // This is the obstacle radius in which an obstacle affects the robot
   const float OBSTACLE_DISTANCE = 1.0;
 
   // Init vectors
@@ -143,9 +143,9 @@ AvoidanceNode::make_marker(const std::vector<float> & vector, VFFColor vff_color
   start.x = 0.0;
   start.y = 0.0;
   geometry_msgs::msg::Point end;
-  start.x = vector[0];  // Wrong
-  start.y = vector[1];  // Wrong
-  marker.points = {end, start}; // ??????? Try to invert the order and see the effect of the arrows
+  end.x = vector[0];  
+  end.y = vector[1];  
+  marker.points = {start, end}; // {end, start}; 
 
   marker.scale.x = 0.05;
   marker.scale.y = 0.1;

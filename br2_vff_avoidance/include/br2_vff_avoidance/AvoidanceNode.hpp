@@ -34,7 +34,7 @@ struct VFFVectors
   std::vector<float> result;
 };
 
-typedef enum {RED, GREEN, BLUE, NUM_COLORS} VFFColor;
+typedef enum {RED, GREEN, BLUE, NUM_COLORS} VFFColor;  // creating and enumeration type named VFFColor with RED, GREEN, BLUE and NUM_COLORS assigned integral values starting from 0
 
 class AvoidanceNode : public rclcpp::Node
 {
@@ -44,7 +44,7 @@ public:
   void scan_callback(sensor_msgs::msg::LaserScan::UniquePtr msg);
   void control_cycle();
 
-protected:
+protected:  // objects of the class that are instantiated cannot access class attributes under protected (and private). Protected class attributes can be accessed by the class itself or derived classes
   VFFVectors get_vff(const sensor_msgs::msg::LaserScan & scan);
 
   visualization_msgs::msg::MarkerArray get_debug_vff(const VFFVectors & vff_vectors);
