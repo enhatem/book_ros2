@@ -46,6 +46,7 @@ public:
 
 protected:  // objects of the class that are instantiated cannot access class attributes under protected (and private). Protected class attributes can be accessed by the class itself or derived classes
   VFFVectors get_vff(const sensor_msgs::msg::LaserScan & scan);
+  VFFVectors get_vff_v2(const sensor_msgs::msg::LaserScan & scan);
 
   visualization_msgs::msg::MarkerArray get_debug_vff(const VFFVectors & vff_vectors);
   visualization_msgs::msg::Marker make_marker(

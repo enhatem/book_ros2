@@ -17,6 +17,7 @@
 #include <utility>
 #include <algorithm>
 #include <vector>
+#include <numeric>
 
 #include "geometry_msgs/msg/twist.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
@@ -59,12 +60,21 @@ AvoidanceNode::control_cycle()
   }
 
   // Get VFF vectors
-  const VFFVectors & vff = get_vff(*last_scan_);
+  // const VFFVectors & vff = get_vff(*last_scan_);  // original code
+  const VFFVectors & vff = get_vff_v2(*last_scan_); // exercise code
+  RCLCPP_INFO(this->get_logger(), "------------------------------------------------");
+  RCLCPP_INFO(this->get_logger(), "Attractive vector: {" + std::to_string(vff.attractive[0]) + ", " + std::to_string(vff.attractive[1]) + "}");
+  RCLCPP_INFO(this->get_logger(), "Repulsive vector: {" + std::to_string(vff.repulsive[0]) + ", " + std::to_string(vff.repulsive[1]) + "}");
+  RCLCPP_INFO(this->get_logger(), "Result vector: {" + std::to_string(vff.result[0]) + ", " + std::to_string(vff.result[1]) + "}");
+
 
   // Use result vector to calculate output speed
   const auto & v = vff.result;  // creating a reference variable to vff.results
   double angle = atan2(v[1], v[0]);  // calculates the angle θ from the positive x-axis to the point (x, y) in the range [-π, π]
   double module = sqrt(v[0] * v[0] + v[1] * v[1]);
+
+  RCLCPP_INFO(this->get_logger(), "angle: "+ std::to_string(angle));
+  RCLCPP_INFO(this->get_logger(), "module: "+ std::to_string(module));
 
   // Create ouput message, controlling speed limits
   geometry_msgs::msg::Twist vel;
@@ -116,6 +126,81 @@ AvoidanceNode::get_vff(const sensor_msgs::msg::LaserScan & scan)
 
   return vff_vector;
 }
+
+VFFVectors
+AvoidanceNode::get_vff_v2(const sensor_msgs::msg::LaserScan & scan)
+{
+  // Setting the radius for which an obstacle is detected
+  const float OBSTACLE_DISTANCE = 1.0;
+
+  // Init vectors
+  VFFVectors vff_vector;
+  vff_vector.attractive = {1.0, 0.0};
+  vff_vector.repulsive = {0.0, 0.0};
+  vff_vector.result = {0.0, 0.0};
+
+  // Getting the indices and angles of all the obstacles around the robot
+  std::vector<float> obstacle_angles;
+  std::vector<float> obstacle_distances;
+  for (size_t i = 0; i < scan.ranges.size(); i++){
+    if (scan.ranges[i] < OBSTACLE_DISTANCE){
+      obstacle_angles.push_back(scan.angle_min + scan.angle_increment * i );
+      obstacle_distances.push_back(scan.ranges[i]);
+    }
+  }
+  auto const count = static_cast<float>(obstacle_angles.size());  // getting the total number of obstacles detected
+  // RCLCPP_INFO(this->get_logger(), "Obstacle number: "+ std::to_string(count));
+  // RCLCPP_INFO(this->get_logger(), "obstacle_angles IsEmpty: "+ std::to_string(obstacle_angles.empty()));
+  // RCLCPP_INFO(this->get_logger(), "Attractive vector: {" + std::to_string(vff_vector.attractive[0]) + ", " + std::to_string(vff_vector.attractive[1]) + "}");
+  // RCLCPP_INFO(this->get_logger(), "Repulsive vector: {" + std::to_string(vff_vector.repulsive[0]) + ", " + std::to_string(vff_vector.repulsive[1]) + "}");
+  // RCLCPP_INFO(this->get_logger(), "Result vector: {" + std::to_string(vff_vector.result[0]) + ", " + std::to_string(vff_vector.result[1]) + "}");
+
+  // Checking if any obstacle was detected
+  if (obstacle_angles.empty()){
+    // Caculating the result vector 
+    vff_vector.result[0] = vff_vector.attractive[0] + vff_vector.repulsive[0];
+    vff_vector.result[1] = vff_vector.attractive[1] + vff_vector.repulsive[1];
+    return vff_vector;
+  }
+  
+  // Calculating average angle to obstacle
+  float average_angle = std::reduce(obstacle_angles.begin(), obstacle_angles.end()) / count;
+
+  // Calculating the opposite angle
+  float average_opposite_angle = average_angle + M_PI;
+
+  // Calculating average obstacle distance
+  float average_obstacles_distance = std::reduce(obstacle_distances.begin(), obstacle_distances.end()) / count;
+
+  // Calculating the magnitude of the repulsion vector
+  float repulsion_magnitude = OBSTACLE_DISTANCE - average_obstacles_distance;
+
+  // Calculating the repulsive vector
+  vff_vector.repulsive[0] = cos(average_opposite_angle) * repulsion_magnitude;
+  vff_vector.repulsive[1] = sin(average_opposite_angle) * repulsion_magnitude;
+
+  // Caculating the result vector 
+  vff_vector.result[0] = vff_vector.attractive[0] + vff_vector.repulsive[0];
+  vff_vector.result[1] = vff_vector.attractive[1] + vff_vector.repulsive[1];
+
+
+  // RCLCPP_INFO(this->get_logger(), "------------------------------------------------------------");
+  // RCLCPP_INFO(this->get_logger(), "------------------------------------------------------------");
+  // RCLCPP_INFO(this->get_logger(), "Number of obstacles detected: " + std::to_string(count));
+  // RCLCPP_INFO(this->get_logger(), "Average obstacles angle: " + std::to_string(average_angle));
+  // RCLCPP_INFO(this->get_logger(), "Average distance to obstacles: " + std::to_string(average_obstacles_distance));
+  // RCLCPP_INFO(this->get_logger(), "------------------------------------------------------------");
+  // RCLCPP_INFO(this->get_logger(), "Attractive vector: {" + std::to_string(vff_vector.attractive[0]) + ", " + std::to_string(vff_vector.attractive[1]) + "}");
+  // RCLCPP_INFO(this->get_logger(), "Repulsive vector: {" + std::to_string(vff_vector.repulsive[0]) + ", " + std::to_string(vff_vector.repulsive[1]) + "}");
+  // RCLCPP_INFO(this->get_logger(), "Result vector: {" + std::to_string(vff_vector.result[0]) + ", " + std::to_string(vff_vector.result[1]) + "}");
+
+
+
+  return vff_vector;
+
+}
+
+
 
 visualization_msgs::msg::MarkerArray
 AvoidanceNode::get_debug_vff(const VFFVectors & vff_vectors)
