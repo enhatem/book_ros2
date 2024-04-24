@@ -34,7 +34,7 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 
 HeadController::HeadController()
 : LifecycleNode("head_tracker"),
-  pan_pid_(0.0, 1.0, 0.0, 0.3),
+  pan_pid_(0.0, 1.0, 0.0, 0.3),  // Why did we set the PID controllers to have min and max references between 0 and 1 instead of -1 and 1 ? 
   tilt_pid_(0.0, 1.0, 0.0, 0.3)
 {
   command_sub_ = create_subscription<br2_tracking_msgs::msg::PanTiltCommand>(
@@ -82,10 +82,10 @@ HeadController::on_deactivate(const rclcpp_lifecycle::State & previous_state)
   command_msg.points[0].accelerations.resize(2);
   command_msg.points[0].positions[0] = 0.0;
   command_msg.points[0].positions[1] = 0.0;
-  command_msg.points[0].velocities[0] = 0.1;
-  command_msg.points[0].velocities[1] = 0.1;
-  command_msg.points[0].accelerations[0] = 0.1;
-  command_msg.points[0].accelerations[1] = 0.1;
+  command_msg.points[0].velocities[0] = 0.1;  // should be 0
+  command_msg.points[0].velocities[1] = 0.1;  // should be 0 
+  command_msg.points[0].accelerations[0] = 0.1;  // should be 0 
+  command_msg.points[0].accelerations[1] = 0.1;  // should be 0 
   command_msg.points[0].time_from_start = rclcpp::Duration(1s);
 
   joint_pub_->publish(command_msg);
@@ -127,22 +127,27 @@ HeadController::control_sycle()
   if (last_command_ == nullptr || (now() - last_command_ts_) > 100ms) {
     command_msg.points[0].positions[0] = 0.0;
     command_msg.points[0].positions[1] = 0.0;
-    command_msg.points[0].velocities[0] = 0.1;
-    command_msg.points[0].velocities[1] = 0.1;
-    command_msg.points[0].accelerations[0] = 0.1;
-    command_msg.points[0].accelerations[1] = 0.1;
+    command_msg.points[0].velocities[0] = 0.1;  // should be 0
+    command_msg.points[0].velocities[1] = 0.1;  // should be 0 
+    command_msg.points[0].accelerations[0] = 0.1;  // should be 0 
+    command_msg.points[0].accelerations[1] = 0.1;  // should be 0 
     command_msg.points[0].time_from_start = rclcpp::Duration(1s);
   } else {
     double control_pan = pan_pid_.get_output(last_command_->pan);
     double control_tilt = tilt_pid_.get_output(last_command_->tilt);
 
-    command_msg.points[0].positions[0] = last_state_->actual.positions[0] - control_pan;
-    command_msg.points[0].positions[1] = last_state_->actual.positions[1] - control_tilt;
+    command_msg.points[0].positions[0] = last_state_->actual.positions[0] - control_pan;  // why - not + ? ==> add log to check each value
+    command_msg.points[0].positions[1] = last_state_->actual.positions[1] - control_tilt;  // why - not + ? 
 
-    command_msg.points[0].velocities[0] = 0.5;
-    command_msg.points[0].velocities[1] = 0.5;
-    command_msg.points[0].accelerations[0] = 0.5;
-    command_msg.points[0].accelerations[1] = 0.5;
+    // debugging
+    RCLCPP_INFO(this->get_logger(), "Joint 1 state : " + std::to_string(last_state_->actual.positions[0]));
+    RCLCPP_INFO(this->get_logger(), "Joint 1 pan last_command : " + std::to_string(last_command_->pan));
+    RCLCPP_INFO(this->get_logger(), "Joint 1 pan control pan PID output : " + std::to_string(control_pan));
+
+    command_msg.points[0].velocities[0] = 0.5;  // should be 0
+    command_msg.points[0].velocities[1] = 0.5;  // should be 0 
+    command_msg.points[0].accelerations[0] = 0.5;  // should be 0 
+    command_msg.points[0].accelerations[1] = 0.5;  // should be 0 
   }
 
   joint_pub_->publish(command_msg);

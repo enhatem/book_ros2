@@ -36,8 +36,11 @@ int main(int argc, char * argv[])
     "/detection", rclcpp::SensorDataQoS(),
     [command_pub](vision_msgs::msg::Detection2D::SharedPtr msg) {
       br2_tracking_msgs::msg::PanTiltCommand command;
-      command.pan = (msg->bbox.center.x / msg->source_img.width) * 2.0 - 1.0;
-      command.tilt = (msg->bbox.center.y / msg->source_img.height) * 2.0 - 1.0;
+      // By dividing the x-coordinate of the object's center by the width of the image, we are converting the absolute position of the object into a relative position. The result of this operation is a value between 0 and 1, representing the relative horizontal position of the object within the image
+      // then, by multiplying by 2, we are scaling the range of the relative position from a value between [0, 1] to a value between [0, 2]
+      // Finally, subtracting 1 from the scaled value shifts the range from [0, 2] to [-1, 1]
+      command.pan = (msg->bbox.center.x / msg->source_img.width) * 2.0 - 1.0;  
+      command.tilt = (msg->bbox.center.y / msg->source_img.height) * 2.0 - 1.0; 
       command_pub->publish(command);
     });
 
@@ -46,7 +49,7 @@ int main(int argc, char * argv[])
   executor.add_node(node_head_controller->get_node_base_interface());
   executor.add_node(node_tracker);
 
-  node_head_controller->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
+  node_head_controller->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);  // why is this required ? 
 
   executor.spin();
 

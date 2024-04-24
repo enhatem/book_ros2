@@ -41,7 +41,7 @@ PIDController::set_pid(double n_KP, double n_KI, double n_KD)
 }
 
 double
-PIDController::get_output(double new_reference)
+PIDController::get_output(double new_reference)  // why is this the output of a pid ?
 {
   double ref = new_reference;
   double output = 0.0;
@@ -61,11 +61,11 @@ PIDController::get_output(double new_reference)
   }
 
   // Integral Error
-  int_error_ = (int_error_ + output) * 2.0 / 3.0;
+  int_error_ = (int_error_ + output) * 2.0 / 3.0;  // integrating the output over time with a decay factor of 2/3 to prevent the integral term of becoming too large (a problem known as integral windup). The integral error is stored and used in the next iteration.
 
   // Derivative Error
-  double deriv_error = output - prev_error_;
-  prev_error_ = output;
+  double deriv_error = output - prev_error_;  // calculating the rate of change of the output
+  prev_error_ = output;  // storing the output as the previous error for the next iteration
 
   output = KP_ * output + KI_ * int_error_ + KD_ * deriv_error;
 

@@ -59,25 +59,48 @@ ObjectDetector::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & m
 
   cv_bridge::CvImagePtr cv_ptr;
   try {
-    cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+    cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);  // converting received image to CvImage format with BGR8 encoding
   } catch (cv_bridge::Exception & e) {
     RCLCPP_ERROR(get_logger(), "cv_bridge exception: %s", e.what());
     return;
   }
 
   cv::Mat img_hsv;
-  cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV);
+  cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV);  // converting BGR color space to the HSV color space
 
-  cv::Mat1b filtered;
+  cv::Mat1b filtered;  // represents a matrix with a single channel of 8-bit unsigned integers ==> this data type is used since the output of cv::inRange will be a binary image, which has a single channel and pixel values of either 0 or 255.
   cv::inRange(img_hsv, cv::Scalar(h, s, v), cv::Scalar(H, S, V), filtered);
 
-  auto moment = cv::moments(filtered, true);
-  cv::Rect bbx = cv::boundingRect(filtered);
+  // applying noise filtering to the image
+  cv::medianBlur(filtered, filtered, 17);
 
-  auto m = cv::moments(filtered, true);
-  if (m.m00 < 0.000001) {return;}
-  int cx = m.m10 / m.m00;
-  int cy = m.m01 / m.m00;
+  // finding contours in the mask
+  std::vector<std::vector<cv::Point>> contours;  // TODO: Check what are elements hierarchies
+  cv::findContours(filtered, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+  // checking if any contours were found 
+  if (contours.empty()) {
+    RCLCPP_INFO(this->get_logger(), "No contours found.");
+    return;
+  }
+  // calculating moments of first detected contour
+  cv::Moments first_moment = cv::moments(contours[0], false);  // there's a bug here
+  // skipping iteration if no object detected
+  if (first_moment.m00 < 1) {return;}
+  // calculating the center of mass of the first detected contour
+  cv::Point2f centeroid = cv::Point2f(first_moment.m10 / first_moment.m00, first_moment.m01 / first_moment.m00);
+  auto cx = centeroid.x;
+  auto cy = centeroid.y;
+  // calculating the bounding box of the first detected contour
+  cv::Rect bbx = cv::boundingRect(contours[0]);
+
+  // auto moment = cv::moments(filtered, true);
+  // cv::Rect bbx = cv::boundingRect(filtered);
+
+  // auto m = cv::moments(filtered, true);  // calculating the moments of the filtered image 
+  // if (m.m00 < 0.000001) {return;}  // return if the area of the image is less than 0.000001 ==> no object detected in binary image (black image without any white pixels)
+  // calculating the center of mass (centroid) coordinates
+  // int cx = m.m10 / m.m00;
+  // int cy = m.m01 / m.m00;
 
   vision_msgs::msg::Detection2D detection_msg;
   detection_msg.header = msg->header;
@@ -89,8 +112,13 @@ ObjectDetector::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & m
   detection_pub_->publish(detection_msg);
 
   if (debug_) {
-    cv::rectangle(cv_ptr->image, bbx, cv::Scalar(0, 0, 255), 3);
-    cv::circle(cv_ptr->image, cv::Point(cx, cy), 3, cv::Scalar(255, 0, 0), 3);
+    // drawing bounding boxes for all contours
+    for (const auto & contour : contours) {
+      cv::Rect bounding_rect = cv::boundingRect(contour);
+      cv::rectangle(cv_ptr->image, bounding_rect, cv::Scalar(0, 0, 255), 2);
+    }
+    // cv::rectangle(cv_ptr->image, bbx, cv::Scalar(0, 0, 255), 3);  // Draws a rectangle on the image cv_ptr->image using the bounding box bbx with a red color (BGR format) and a line thickness of 3 pixels.
+    cv::circle(cv_ptr->image, cv::Point(cx, cy), 3, cv::Scalar(255, 0, 0), 3);  // Draws a circle on the image cv_ptr->image at the center point (cx, cy) with a blue color (BGR format), a radius of 3 pixels, and a line thickness of 3 pixels.
     cv::imshow("cv_ptr->image", cv_ptr->image);
     cv::waitKey(1);
   }
